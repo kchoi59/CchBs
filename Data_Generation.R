@@ -1,4 +1,4 @@
-############### code for data generation ###############
+############### R code for data (cohort) generation ###############
 
 r <- c()
 for (i in 1:2000) {
@@ -11,7 +11,7 @@ for (i in 1:2000) {
   sigma1 <- matrix(c(1, rho, rho, 1), nrow = p_z, ncol = p_z)  # correlation matrix for (z1, z2)
   ### generating covariates (z1, z2) ###
   z_cts <- mvrnorm(n = n_pop, mu = c(0, 0), Sigma = sigma1)
-  #z_cts <- ifelse(z_cts > 0, 1, 0)
+  # z_cts <- ifelse(z_cts > 0, 1, 0) # uncomment this for generating binary covariates
   colnames(z_cts) <- c("z1", "z2")
   z1 = z_cts[,1] # covariate possibly missing (z_mis)
   z2 = z_cts[,2] # covariate fully observed (z_obs)
@@ -23,7 +23,14 @@ for (i in 1:2000) {
   time <- -log(1 - u)/(lambda.zero * exp(z_cts %*% beta)) # failure time following exponential distribution
   ### generating censoring time ###
   # generating censoring time C
+
+  # censoring = 20% | censor <- rexp(n_pop, 0.225) | cor = 0.8/0.5 | continuous covariates
+  # censoring = 20% | censor <- rexp(n_pop, 0.35) | cor = 0.8/0.5 | binary covariates
+  # censoring = 90% | censor <- rexp(n_pop, 10.5) | cor = 0.8/0.5 | continuous covariates
+  # censoring = 90% | censor <- rexp(n_pop, 13) | cor = 0.8/0.5 | binary covariates
   censor <- rexp(n_pop, 10.5)
+
+  
   # failure indicator delta
   delta <- (time <= censor) * 1
   # observed time
@@ -34,8 +41,6 @@ for (i in 1:2000) {
   mydata_full <- data.frame(id, time, censor, time_obs, delta, z_cts)
   r[i] = sum(mydata_full$delta)/nrow(mydata_full)
 }
-mean(r)
-# censoring = 20% | censor <- rexp(n_pop, 0.225) | cor = 0.8/0.5 | continuous
-# censoring = 20% | censor <- rexp(n_pop, 0.35) | cor = 0.8/0.5 | binary
-# censoring = 90% | censor <- rexp(n_pop, 10.5) | cor = 0.8/0.5 | continuous
-# censoring = 90% | censor <- rexp(n_pop, 13) | cor = 0.8/0.5 | binary
+
+mean(r) # censoring proportion
+
