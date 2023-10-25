@@ -7,16 +7,14 @@ library(survey)
 library(sampling)
 library(addhazard)
 library(MASS)
-library(gustave)
-library(pastecs)
-library(writexl)
-library(readxl)
 library(dplyr)
 
 set.seed(111)
 sim = 2000
 beta_srs <- c()
+beta_srs_design <- c()
 beta_bs <- c()
+beta_bs_design <- c()
 se_srs <- c()
 se_bs <- c()
 D2 <- c()
@@ -48,10 +46,9 @@ beta_bs_cali <- c()
 
 for(i in 1 : sim) {
   cat("Simulation number ", i, "\n")
-  ####################################################################
+  
   ####################################################################
   ####################### generate full cohort #######################
-  ####################################################################
   ####################################################################
   
   n_pop <- 1000 # full cohort size
@@ -155,7 +152,7 @@ for(i in 1 : sim) {
                          data = mydata_if)
   ccs_cox <- svycoxph(Surv(time_obs, delta) ~ z1, design = ccs_design)
   beta_srs_design[i] <- coef(ccs_cox)
-  se_srs_design[i] <- summary(ccs_cox)$coefficients[, "se(coef)"]
+  # se_srs_design[i] <- summary(ccs_cox)$coefficients[, "se(coef)"]
   cch_cal <- calibrate(ccs_design, phase = 2, calfun = "raking", ~ inffun)
   cox_cal_cch <- svycoxph(Surv(time_obs, delta) ~ z1, design = cch_cal)
   beta_cali[i] <- coef(cox_cal_cch)
@@ -172,7 +169,7 @@ for(i in 1 : sim) {
                         data = mydata_if)
   bs_cox_design <- svycoxph(Surv(time_obs, delta) ~ z1, design = bs_design)
   beta_bs_design[i] <- coef(bs_cox_design)
-  se_bs_design[i] <- summary(bs_cox_design)$coefficients[, "se(coef)"]
+  # se_bs_design[i] <- summary(bs_cox_design)$coefficients[, "se(coef)"]
   bs_cal <- calibrate(bs_design, phase = 2, calfun = "raking", ~ inffun)
   cox_cal_bs <- svycoxph(Surv(time_obs, delta) ~ z1, design = bs_cal)
   beta_bs_cali[i] <- coef(cox_cal_bs)
@@ -230,8 +227,3 @@ rr=data.frame(v=c("mean of beta srs","sd of beta srs",
                   mean(est_se_D2_df),sd(est_se_D2_df),
                   mean(sqrt(D2)),sd(sqrt(D2))))
 (rr=data.frame(n=rr$v,n=round(rr$n,4)))
-
-
-# mean of sqrt D2: phase 1
-# mean of est se (dfbeta2): phase 2
-# mean of two phase est se (D2 + vub2): est se
