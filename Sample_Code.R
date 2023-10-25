@@ -1,6 +1,6 @@
-###########################################################################################################
-######### Case Cohort Sampling | high censoring | random cohort | continuous covariates | rho 0.8 #########
-###########################################################################################################
+# This file is a sample code to reproduce the results in Table 5 for continuous covariates in the case-cohort sampling setting.
+# The cohort size is 1000 and the subcohort size is 100.
+# The correlation between covariates is 0.8.
 
 library(survival)
 library(survey)
