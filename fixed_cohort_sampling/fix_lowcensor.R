@@ -1,20 +1,17 @@
 ######### Subcohort Sampling | low censoring | fixed cohort | continuous covariates | rho 0.8 #########
 
-
-rm(list = ls())
-
 library(survival)
 library(survey)
 library(sampling)
 library(addhazard)
 library(MASS)
 library(gustave)
-library(pastecs)
+# library(pastecs)
 library(psych)
 library(writexl)
 library(readxl)
 library(dplyr)
-library(segmented)
+# library(segmented)
 
 seed_num = 2222
 set.seed(seed_num)
@@ -27,7 +24,7 @@ p_z <- 2  # number of covariates
 sigma1 <- matrix(c(1, rho, rho, 1), nrow = p_z, ncol = p_z)  # correlation matrix for (z1, z2) 
 ### generating covariates (z1, z2) ###
 z_cts <- mvrnorm(n = n_pop, mu = c(0, 0), Sigma = sigma1)
-#z_cts <- ifelse(z_cts > 0, 1, 0)
+# z_cts <- ifelse(z_cts > 0, 1, 0)
 colnames(z_cts) <- c("z1", "z2")
 z1 = z_cts[,1] # covariate possibly missing (z_mis)
 z2 = z_cts[,2] # covariate fully observed (z_obs)
@@ -83,7 +80,7 @@ compute_score_vector <- function(mydata, beta, w) {
 
 
 # read the data
-n = 200 # subcohort size
+n = 100 # subcohort size: 100 or 200
 N = nrow(mydata_full) # cohort size
 ifmodel = coxph(Surv(time_obs, delta) ~ z2, data = mydata_full) 
 inffun = resid(ifmodel, "dfbeta")   # delta-beta: add 1 or not?
@@ -92,20 +89,11 @@ mydata_full$pik = rep(n/N, N);
 mydata_full$wt = 1/mydata_full$pik
 
 
-sim = 10
+sim = 2000
 beta_srs <- c()
 beta_bs <- c()
 se_srs <- c()
 se_bs <- c()
-D1 <- c()
-D2 <- c()
-est_se_score <- c()
-est_se_dfbeta1 <- c()
-est_se_dfbeta2 <- c()
-vub_bs_dfbeta1 <- c()
-vub_bs_dfbeta2 <- c()
-vub_bs_score <- c()
-vub_bs_dfbeta <- c()
 robust_se_bs <- c()
 robust_se_srs <- c()
 beta_cali <- c()
