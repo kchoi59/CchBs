@@ -61,8 +61,8 @@ for(i in 1 : sim) {
   z_cts <- mvrnorm(n = n_pop, mu = c(0, 0), Sigma = sigma1)
   # z_cts <- ifelse(z_cts > 0, 1, 0)
   colnames(z_cts) <- c("z1", "z2")
-  z1 = z_cts[,1] # covariate possibly missing (z_mis)
-  z2 = z_cts[,2] # covariate fully observed (z_obs)
+  z1 <- z_cts[,1] # covariate possibly missing (z_mis)
+  z2 <- z_cts[,2] # covariate fully observed (z_obs)
   # cor(z1, z2) # correlation
   ### generating failure time T ###
   # generating unif(0,1)
@@ -95,8 +95,8 @@ for(i in 1 : sim) {
   ifmodel <- coxph(Surv(time_obs, delta) ~ z2, data = mydata)
   inffun <- resid(ifmodel, "dfbeta")
   mydata_if <- cbind(mydata, inffun)
-  mydata_if$pik = ifelse(mydata_if$delta == 1, 1, n/(N - sum(mydata_if$delta))) # inclusion probability...!
-  mydata_if$wt = 1/mydata_if$pik
+  mydata_if$pik <- ifelse(mydata_if$delta == 1, 1, n/(N - sum(mydata_if$delta))) # inclusion probability...!
+  mydata_if$wt <- 1/mydata_if$pik
   mydata_control <- mydata_if[mydata_if$delta == 0, ]
   
   ####################################################################
@@ -121,12 +121,12 @@ for(i in 1 : sim) {
   ####################################################################
   ######################## balanced sampling #########################
   ####################################################################
-  s = samplecube(cbind(mydata_control$pik,mydata_control$inffun),
+  s <- samplecube(cbind(mydata_control$pik,mydata_control$inffun),
                  mydata_control$pik, order = 1, comment = F) # balanced sampling in the control set
-  mydata_control$in.bs.subcohort = s # add sample indicator to the control set
-  id.bs.subcohort = mydata_control[mydata_control$in.bs.subcohort == 1,]$id # get the id of the samples
-  id.cases = mydata_if[mydata_if$delta==1,]$id # get the id of all cases
-  id.ccs = c(id.cases,id.bs.subcohort) # combine the id of samples and cases
+  mydata_control$in.bs.subcohort <- s # add sample indicator to the control set
+  id.bs.subcohort <- mydata_control[mydata_control$in.bs.subcohort == 1,]$id # get the id of the samples
+  id.cases <- mydata_if[mydata_if$delta==1,]$id # get the id of all cases
+  id.ccs <- c(id.cases,id.bs.subcohort) # combine the id of samples and cases
   bs.ccs <- mydata_if$id %in% id.ccs # case-control sample indicator
   mydata_if$in.bs.ccs <- bs.ccs # case-control sample indicator
   cox_ccs_bs <- coxph(Surv(time_obs, delta) ~ z1,
@@ -189,17 +189,17 @@ for(i in 1 : sim) {
   
   
   # variance for the balanced sample only
-  mydata_if$in.bs.subcohort_v=mydata_if$id %in% id.bs.subcohort
+  mydata_if$in.bs.subcohort_v <- mydata_if$id %in% id.bs.subcohort
   mydata_ccs_bs <- mydata_if[mydata_if$in.bs.ccs,]
   mydata_ccs_bs$ccs_id <- 1 : nrow(mydata_ccs_bs)
   ccs_sub_id <- mydata_ccs_bs[mydata_ccs_bs$in.bs.subcohort_v == T,]$ccs_id
-  Ys_bs_score = resid(cox_ccs_bs, "score")[ccs_sub_id]
-  Ys_bs_dfbeta2 = resid(cox_ccs_bs, "dfbeta")[ccs_sub_id] * (n/(N-sum(mydata_if$delta))) 
-  Xs_bs = cbind(mydata_ccs_bs$pik[ccs_sub_id],mydata_ccs_bs$inffun[ccs_sub_id])
-  pik_bs = mydata_ccs_bs$pik[ccs_sub_id]
-  w = (n/n_pop) / pik_bs[1]
+  Ys_bs_score <- resid(cox_ccs_bs, "score")[ccs_sub_id]
+  Ys_bs_dfbeta2 <- resid(cox_ccs_bs, "dfbeta")[ccs_sub_id] * (n/(N-sum(mydata_if$delta))) 
+  Xs_bs <- cbind(mydata_ccs_bs$pik[ccs_sub_id],mydata_ccs_bs$inffun[ccs_sub_id])
+  pik_bs <- mydata_ccs_bs$pik[ccs_sub_id]
+  w <- (n/n_pop) / pik_bs[1]
  
-  vub_bs_dfbeta2[i] = var_u_b(Ys=Ys_bs_dfbeta2, Xs=Xs_bs,
+  vub_bs_dfbeta2[i] <- var_u_b(Ys=Ys_bs_dfbeta2, Xs=Xs_bs,
                               pik=pik_bs, p=2, n=sum(s))
   est_se_dfbeta2[i] <- sqrt(vub_bs_dfbeta2[i]) # estimated phase 2 variability
   est_se_D2_df[i] <- sqrt(D2[i] + vub_bs_dfbeta2[i]) # estimated phase 1 + phase 2 variability
@@ -210,20 +210,20 @@ for(i in 1 : sim) {
   # ci_ind_score[i] <- ifelse((log(2) >= ci_low_score[i]) & (log(2) <= ci_up_score[i]), 1, 0)
 }
 
-rr=data.frame(v=c("mean of beta srs","sd of beta srs",
-                  "mean of beta bs","sd of beta bs",
-                  "mean of beta full","sd of beta full",
-                  "mean of beta cali","sd of beta cali",
-                  "mean of beta bs cali","sd of beta bs cali",
-                  "mean of phase 2 se","sd of phase 2 se",
-                  "mean of two phase est se","sd of two phase est se",
-                  "mean of phase 1 se","sd of phase 1 se"),
-              n=c(mean(beta_srs),sd(beta_srs),
-                  mean(beta_bs),sd(beta_bs),
-                  mean(full_beta),sd(full_beta),
-                  mean(beta_cali),sd(beta_cali),
-                  mean(beta_bs_cali),sd(beta_bs_cali),
-                  mean(est_se_dfbeta2),sd(est_se_dfbeta2),
-                  mean(est_se_D2_df),sd(est_se_D2_df),
-                  mean(sqrt(D2)),sd(sqrt(D2))))
-(rr=data.frame(n=rr$v,n=round(rr$n,4)))
+rr <- data.frame(v=c("mean of beta srs","sd of beta srs",
+                     "mean of beta bs","sd of beta bs",
+                     "mean of beta full","sd of beta full",
+                     "mean of beta cali","sd of beta cali",
+                     "mean of beta bs cali","sd of beta bs cali",
+                     "mean of phase 2 se","sd of phase 2 se",
+                     "mean of two phase est se","sd of two phase est se",
+                     "mean of phase 1 se","sd of phase 1 se"),
+                  n=c(mean(beta_srs),sd(beta_srs),
+                      mean(beta_bs),sd(beta_bs),
+                      mean(full_beta),sd(full_beta),
+                      mean(beta_cali),sd(beta_cali),
+                      mean(beta_bs_cali),sd(beta_bs_cali),
+                      mean(est_se_dfbeta2),sd(est_se_dfbeta2),
+                      mean(est_se_D2_df),sd(est_se_D2_df),
+                     mean(sqrt(D2)),sd(sqrt(D2))))
+(rr <- data.frame(n = rr$v, n = round(rr$n, 4)))
