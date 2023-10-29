@@ -9,6 +9,7 @@ library(addhazard)
 library(MASS)
 library(dplyr)
 
+
 set.seed(111)
 sim <- 2000
 beta_srs <- c()
