@@ -88,7 +88,6 @@ for(i in 1 : sim) {
   # full_se[i] <- summary(full_cox)$coefficients[, "se(coef)"]
   # full_robust_se[i] <- summary(full_cox)$coefficients[, "robust se"]
   
-  
   n <- 100; # subcohort size
   N <- nrow(mydata) # full cohort size
   ifmodel <- coxph(Surv(time_obs, delta) ~ z2, data = mydata)
