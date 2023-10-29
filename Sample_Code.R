@@ -77,7 +77,6 @@ for(i in 1 : sim) {
   time_obs <- time * delta + censor * (1 - delta)
   # generating ids
   id <- c(1 : n_pop)
-  # data: full cohort data
   
   ####################################################################
   ############################ full cohort ###########################
