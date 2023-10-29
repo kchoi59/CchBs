@@ -142,6 +142,7 @@ for(i in 1 : sim) {
   #                weights = mydata_if$wt[mydata_if$in.bs.ccs])$var # should not be robust
   # D4[i] <- cox_ccs_bs$var # robust var
   
+
   
   ####################################################################
   ############################ calibration ###########################
@@ -158,6 +159,7 @@ for(i in 1 : sim) {
   beta_cali[i] <- coef(cox_cal_cch)
   # se_cali[i] <- summary(cox_cal_cch)$coefficients[, "se(coef)"]
   # robust_se_cali[i] <- summary(cox_cal_cch)$coefficients[, "robust se"]
+
   
   
   ####################################################################
@@ -175,6 +177,8 @@ for(i in 1 : sim) {
   beta_bs_cali[i] <- coef(cox_cal_bs)
   # se_bs_cali[i] <- summary(cox_cal_bs)$coefficients[, "se(coef)"]
   # robust_se_bs_cali[i] <- summary(cox_cal_bs)$coefficients[, "robust se"]
+
+
   
   ####################################################################
   ############ variance estimation for balanced sampling #############
@@ -186,8 +190,6 @@ for(i in 1 : sim) {
                t(b) %*% t(Xs) %*% diag(c / pik^2) %*% Ys + t(b) %*% t(Xs) %*% diag(c / pik^2) %*% Xs %*% b)
     return(vub)
   }
-  
-  
   # variance for the balanced sample only
   mydata_if$in.bs.subcohort_v <- mydata_if$id %in% id.bs.subcohort
   mydata_ccs_bs <- mydata_if[mydata_if$in.bs.ccs,]
@@ -198,7 +200,6 @@ for(i in 1 : sim) {
   Xs_bs <- cbind(mydata_ccs_bs$pik[ccs_sub_id],mydata_ccs_bs$inffun[ccs_sub_id])
   pik_bs <- mydata_ccs_bs$pik[ccs_sub_id]
   w <- (n/n_pop) / pik_bs[1]
- 
   vub_bs_dfbeta2[i] <- var_u_b(Ys=Ys_bs_dfbeta2, Xs=Xs_bs,
                               pik=pik_bs, p=2, n=sum(s))
   est_se_dfbeta2[i] <- sqrt(vub_bs_dfbeta2[i]) # estimated phase 2 variability
@@ -210,20 +211,20 @@ for(i in 1 : sim) {
   # ci_ind_score[i] <- ifelse((log(2) >= ci_low_score[i]) & (log(2) <= ci_up_score[i]), 1, 0)
 }
 
-rr <- data.frame(v=c("mean of beta srs","sd of beta srs",
-                     "mean of beta bs","sd of beta bs",
-                     "mean of beta full","sd of beta full",
-                     "mean of beta cali","sd of beta cali",
-                     "mean of beta bs cali","sd of beta bs cali",
-                     "mean of phase 2 se","sd of phase 2 se",
-                     "mean of two phase est se","sd of two phase est se",
-                     "mean of phase 1 se","sd of phase 1 se"),
-                  n=c(mean(beta_srs),sd(beta_srs),
-                      mean(beta_bs),sd(beta_bs),
-                      mean(full_beta),sd(full_beta),
-                      mean(beta_cali),sd(beta_cali),
-                      mean(beta_bs_cali),sd(beta_bs_cali),
-                      mean(est_se_dfbeta2),sd(est_se_dfbeta2),
-                      mean(est_se_D2_df),sd(est_se_D2_df),
-                     mean(sqrt(D2)),sd(sqrt(D2))))
+rr <- data.frame(v=c("mean of beta srs", "sd of beta srs",
+                     "mean of beta bs", "sd of beta bs",
+                     "mean of beta full", "sd of beta full",
+                     "mean of beta cali", "sd of beta cali",
+                     "mean of beta bs cali", "sd of beta bs cali",
+                     "mean of phase 2 see", "sd of phase 2 se",
+                     "mean of two phase est see", "sd of two phase est se",
+                     "mean of phase 1 see", "sd of phase 1 se"),
+                  n=c(mean(beta_srs), sd(beta_srs),
+                      mean(beta_bs), sd(beta_bs),
+                      mean(full_beta), sd(full_beta),
+                      mean(beta_cali), sd(beta_cali),
+                      mean(beta_bs_cali), sd(beta_bs_cali),
+                      mean(est_se_dfbeta2), sd(est_se_dfbeta2),
+                      mean(est_se_D2_df), sd(est_se_D2_df),
+                     mean(sqrt(D2)), sd(sqrt(D2))))
 (rr <- data.frame(n = rr$v, n = round(rr$n, 4)))
