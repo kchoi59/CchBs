@@ -78,11 +78,12 @@ for(i in 1 : sim) {
   time_obs <- time * delta + censor * (1 - delta)
   # generating ids
   id <- c(1 : n_pop)
+  mydata <- data.frame(id, time, censor, time_obs, delta, z_cts)
+
   
   ####################################################################
   ############################ full cohort ###########################
   ####################################################################
-  mydata <- data.frame(id, time, censor, time_obs, delta, z_cts)
   full_cox <- coxph(Surv(time_obs, delta) ~ z1, data = mydata, robust = T)
   full_beta[i] <- coef(full_cox)
   # full_se[i] <- summary(full_cox)$coefficients[, "se(coef)"]
