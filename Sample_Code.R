@@ -10,7 +10,7 @@ library(MASS)
 library(dplyr)
 
 set.seed(111)
-sim = 2000
+sim <- 2000
 beta_srs <- c()
 beta_srs_design <- c()
 beta_bs <- c()
