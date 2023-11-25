@@ -1,2 +1,2 @@
 # CchBs
-CchBs: Analysis of Case-Cohort Data using Balanced Sampling
+CchBs: Efficient Case-Cohort Design using Balanced Sampling
